@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>漢字ノート 中3</title>
+<style>
+  :root{
+    --paper:#ECE4D0; --paper-deep:#E4DAC0; --paper-white:#F7F3E9; --line:#CBBB94;
+    --ink:#2A2724; --ink-soft:#5E594C; --ink-faint:#8A836E;
+    --aka:#AE3527; --aka-deep:#8A2A1F; --aka-wash:#F3E1DA;
+    --ai:#2E4756; --ai-wash:#DCE5EA; --ok:#2F6B3F; --ok-wash:#DDEBDD;
+    --bg:#F4EFE2;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --paper:#2B2925; --paper-deep:#24221F; --paper-white:#33302B; --line:#4A453B;
+      --ink:#ECE6D8; --ink-soft:#BDB5A2; --ink-faint:#8F8775;
+      --aka:#E0705F; --aka-deep:#F08A79; --aka-wash:#4A2A25;
+      --ai:#9DBCCD; --ai-wash:#24343D; --ok:#86C795; --ok-wash:#233A28;
+      --bg:#1E1C19;
+    }
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);font-family:"Hiragino Sans","Noto Sans JP","Yu Gothic",sans-serif;line-height:1.7;-webkit-font-smoothing:antialiased}
+  .mincho{font-family:"Hiragino Mincho ProN","Noto Serif JP","Yu Mincho","Shippori Mincho",serif}
+  .app{max-width:1000px;margin:0 auto;padding:20px 16px 60px}
+  header{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:16px}
+  .stamp{width:36px;height:36px;border:2px solid var(--aka);border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--aka);font-weight:700;transform:rotate(-6deg);flex:none}
+  h1{font-size:24px;margin:0;letter-spacing:.06em}
+  .who{font-size:13px;color:var(--ink-soft)}
+  nav{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+  nav button{background:transparent;border:1px solid var(--line);color:var(--ink-soft);padding:6px 14px;border-radius:999px;font:inherit;font-size:14px;cursor:pointer}
+  nav button[aria-current="true"]{background:var(--ink);color:var(--paper-white);border-color:var(--ink)}
+  .sheet{background:var(--paper);border:1px solid var(--line);border-radius:4px;padding:22px 22px;margin-bottom:18px}
+  .label{font-size:13px;letter-spacing:.12em;color:var(--ink-soft);display:flex;align-items:center;gap:10px;margin:0 0 14px}
+  .label::after{content:"";flex:1;height:1px;background:var(--line)}
+  h2{font-size:18px;margin:0 0 12px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  @media (max-width:760px){.grid2{grid-template-columns:1fr}}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;background:var(--aka);color:#fff;border:none;border-radius:4px;padding:10px 20px;font:inherit;font-weight:600;font-size:15px;cursor:pointer}
+  .btn:hover{background:var(--aka-deep)}
+  .btn.sub{background:transparent;color:var(--ink);border:1px solid var(--line)}
+  .btn.sub:hover{background:var(--paper-deep)}
+  .btn:disabled{opacity:.45;cursor:not-allowed}
+  .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  .muted{color:var(--ink-soft);font-size:13px}
+  .chk{display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:4px;cursor:pointer}
+  .chk:hover{background:var(--paper-deep)}
+  .chk input{width:18px;height:18px;accent-color:var(--aka)}
+  .chk .n{margin-left:auto;color:var(--ink-faint);font-size:12px}
+  .pills{display:flex;gap:8px;flex-wrap:wrap}
+  .pill input{position:absolute;opacity:0;pointer-events:none}
+  .pill span{display:inline-block;border:1px solid var(--line);border-radius:999px;padding:6px 16px;cursor:pointer;font-size:14px;background:var(--paper-white)}
+  .pill input:checked + span{background:var(--ink);color:var(--paper-white);border-color:var(--ink)}
+  .pill input:focus-visible + span{outline:2px solid var(--ai);outline-offset:2px}
+  input[type=text],textarea,select{font:inherit;color:var(--ink);background:var(--paper-white);border:1px solid var(--line);border-radius:4px;padding:8px 10px}
+  textarea{width:100%;min-height:70px;resize:vertical}
+  .q-meta{display:flex;gap:8px;flex-wrap:wrap;align-items:center;font-size:12px;color:var(--ink-soft);margin-bottom:6px}
+  .tag{border:1px solid var(--line);border-radius:3px;padding:1px 8px;background:var(--paper-white)}
+  .progress{height:6px;background:var(--paper-deep);border-radius:3px;overflow:hidden;margin:4px 0 18px}
+  .progress i{display:block;height:100%;background:var(--aka)}
+  .sentence{font-size:clamp(20px,3.4vw,28px);line-height:1.9;margin:10px 0 6px;letter-spacing:.04em}
+  .sentence b{color:var(--aka);border-bottom:2px solid var(--aka);font-weight:700;padding:0 2px}
+  .instr{font-size:14px;color:var(--ink-soft);margin-bottom:14px}
+  .answer-input{font-size:22px;width:min(100%,360px);padding:10px 12px}
+  .choices{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;max-width:560px}
+  .choice{font:inherit;font-size:22px;padding:12px;border:1px solid var(--line);border-radius:4px;background:var(--paper-white);color:var(--ink);cursor:pointer;text-align:left;display:flex;gap:10px;align-items:center}
+  .choice .k{font-size:12px;color:var(--ink-faint);border:1px solid var(--line);border-radius:3px;padding:0 6px}
+  .choice:hover:not(:disabled){border-color:var(--ink)}
+  .choice.correct{border-color:var(--ok);background:var(--ok-wash)}
+  .choice.wrong{border-color:var(--aka);background:var(--aka-wash)}
+  .feedback{margin-top:18px;border-top:1px dashed var(--line);padding-top:16px;display:flex;gap:18px;align-items:flex-start}
+  .mark{width:64px;height:64px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;font-size:34px;font-weight:700;border:3px solid}
+  .mark.ok{color:var(--ok);border-color:var(--ok)}
+  .mark.ng{color:var(--aka);border-color:var(--aka)}
+  .fb-body p{margin:0 0 6px}
+  .fb-body .ans{font-size:20px}
+  .tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:6px}
+  .tile{background:var(--paper-white);border:1px solid var(--line);border-radius:4px;padding:12px 14px}
+  .tile .v{font-size:28px;font-weight:700;line-height:1.2}
+  .tile .v small{font-size:14px;font-weight:400;color:var(--ink-soft);margin-left:2px}
+  .tile .t{font-size:12px;color:var(--ink-soft)}
+  table{width:100%;border-collapse:collapse;font-size:14px}
+  th,td{text-align:left;padding:7px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{font-weight:600;color:var(--ink-soft);font-size:12px}
+  td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+  .table-wrap{overflow-x:auto}
+  .bar{display:grid;grid-template-columns:170px 1fr 70px;gap:10px;align-items:center;font-size:13px;margin-bottom:8px}
+  @media (max-width:520px){.bar{grid-template-columns:110px 1fr 56px}}
+  .bar .track{height:14px;background:var(--paper-deep);border-radius:2px;display:flex;overflow:hidden}
+  .bar .track i{display:block;height:100%}
+  .seg-m{background:var(--ok)} .seg-p{background:var(--ai)} .seg-w{background:var(--aka)}
+  .legend{display:flex;gap:14px;font-size:12px;color:var(--ink-soft);margin-bottom:10px;flex-wrap:wrap}
+  .legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:4px;vertical-align:-1px}
+  .weak-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}
+  .weak{background:var(--paper-white);border:1px solid var(--line);border-left:3px solid var(--aka);border-radius:4px;padding:10px 12px;font-size:13px}
+  .weak .w{font-size:20px;font-weight:700}
+  .chart svg{width:100%;height:auto;display:block}
+  .chart .axis{stroke:var(--line)} .chart .lbl{fill:var(--ink-soft);font-size:11px}
+  .chart .ln{fill:none;stroke:var(--aka);stroke-width:2}
+  .chart .dot{fill:var(--aka)}
+  .empty{color:var(--ink-soft);font-size:14px;padding:10px 0}
+  .ok-t{color:var(--ok);font-weight:700} .ng-t{color:var(--aka);font-weight:700}
+  .hidden{display:none !important}
+  .kbd{font-size:12px;color:var(--ink-faint)}
+  .note{font-size:12px;color:var(--ink-soft);background:var(--paper-white);border:1px solid var(--line);border-radius:4px;padding:8px 10px}
+  :focus-visible{outline:2px solid var(--ai);outline-offset:2px}
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="stamp mincho">漢</div>
+    <div>
+      <h1 class="mincho">漢字ノート 中3</h1>
+      <div class="who" id="who"></div>
+    </div>
+    <nav id="nav">
+      <button data-view="learn" aria-current="true">学習する</button>
+      <button data-view="history">学習の記録</button>
+      <button data-view="teacher">先生用</button>
+    </nav>
+  </header>
+
+  <!-- 初回：名前の登録 -->
+  <section id="v-profile" class="sheet hidden">
+    <p class="label">はじめに</p>
+    <h2>名前を登録してください</h2>
+    <p class="muted">学習の記録はこの端末の中だけに保存されます。先生に記録を渡すときに、名前と組・番号が使われます。</p>
+    <div class="row" style="margin:12px 0">
+      <label>組 <select id="p-cls"></select></label>
+      <label>番号 <input type="text" id="p-no" inputmode="numeric" size="4"></label>
+      <label>名前 <input type="text" id="p-name" size="16" placeholder="例：山田花子"></label>
+    </div>
+    <button class="btn" id="p-save">登録して始める</button>
+  </section>
+
+  <!-- 学習の設定 -->
+  <section id="v-setup" class="hidden">
+    <div class="sheet">
+      <p class="label">学習の範囲</p>
+      <div class="grid2">
+        <div id="ranges-read"></div>
+        <div id="ranges-write"></div>
+      </div>
+      <div class="row" style="margin-top:6px">
+        <button class="btn sub" id="sel-all">すべて選ぶ</button>
+        <button class="btn sub" id="sel-none">すべて外す</button>
+      </div>
+    </div>
+    <div class="sheet">
+      <div class="grid2">
+        <div>
+          <p class="label">難しさ</p>
+          <div class="pills" id="levels"></div>
+        </div>
+        <div>
+          <p class="label">問題数</p>
+          <div class="pills" id="counts"></div>
+        </div>
+      </div>
+      <p class="label" style="margin-top:18px">出題の順番</p>
+      <div class="pills" id="orders"></div>
+      <p class="muted" id="setup-info" style="margin:16px 0 10px"></p>
+      <div class="row">
+        <button class="btn" id="start">始める</button>
+        <button class="btn sub" id="start-weak">苦手な漢字だけ復習する</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 解答 -->
+  <section id="v-quiz" class="sheet hidden">
+    <div class="row" style="justify-content:space-between">
+      <div class="muted" id="q-count"></div>
+      <button class="btn sub" id="quit" style="padding:4px 12px;font-size:13px">ここでやめる</button>
+    </div>
+    <div class="progress"><i id="q-bar"></i></div>
+    <div class="q-meta" id="q-meta"></div>
+    <div class="sentence mincho" id="q-sentence"></div>
+    <div class="instr" id="q-instr"></div>
+    <div id="q-area"></div>
+    <div id="q-feedback" class="feedback hidden"></div>
+  </section>
+
+  <!-- 結果 -->
+  <section id="v-result" class="hidden">
+    <div class="sheet">
+      <p class="label">今回の結果</p>
+      <div class="tiles" id="r-tiles"></div>
+      <p id="r-message" class="mincho" style="font-size:17px;margin:12px 0 0"></p>
+    </div>
+    <div class="sheet">
+      <p class="label">ふりかえり</p>
+      <p class="muted">今日の学習で気づいたこと、使ってみた感想を書きましょう（書かなくてもかまいません）。</p>
+      <textarea id="r-comment" placeholder="例：同訓異字のちがいが分かってきた。ヒントがあるとよいと思った。"></textarea>
+      <div class="row" style="margin-top:10px">
+        <button class="btn sub" id="r-save-comment">ふりかえりを保存</button>
+        <span class="muted" id="r-saved"></span>
+      </div>
+    </div>
+    <div class="sheet">
+      <p class="label">解いた問題</p>
+      <div class="table-wrap"><table id="r-table"></table></div>
+      <div class="row" style="margin-top:16px">
+        <button class="btn" id="r-retry-wrong">まちがえた問題をもう一度</button>
+        <button class="btn sub" id="r-again">範囲を選び直す</button>
+        <button class="btn sub" id="r-history">学習の記録を見る</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 学習の記録 -->
+  <section id="v-history" class="hidden">
+    <div class="sheet">
+      <p class="label">これまでの学習</p>
+      <div class="tiles" id="h-tiles"></div>
+      <p class="mincho" id="h-growth" style="font-size:16px;margin:12px 0 0"></p>
+    </div>
+    <div class="grid2">
+      <div class="sheet">
+        <p class="label">正答率の移り変わり（最近20回）</p>
+        <div class="chart" id="h-chart"></div>
+      </div>
+      <div class="sheet">
+        <p class="label">範囲ごとの習得状況</p>
+        <div class="legend"><span><i class="seg-m"></i>習得</span><span><i class="seg-p"></i>あと一歩</span><span><i class="seg-w"></i>苦手</span><span>（残りは未学習）</span></div>
+        <div id="h-bars"></div>
+      </div>
+    </div>
+    <div class="sheet">
+      <p class="label">苦手な漢字</p>
+      <div id="h-weak"></div>
+      <div class="row" style="margin-top:12px"><button class="btn" id="h-review">苦手な漢字を復習する</button></div>
+    </div>
+    <div class="sheet">
+      <p class="label">学習の履歴</p>
+      <div class="table-wrap"><table id="h-sessions"></table></div>
+    </div>
+    <div class="sheet">
+      <p class="label">記録を先生に渡す</p>
+      <p class="muted">「記録を書き出す」を押すと、記録のファイルが保存されます。先生の指示に従って提出してください。</p>
+      <div class="row">
+        <button class="btn" id="h-export">記録を書き出す</button>
+        <button class="btn sub" id="h-profile">名前を変更する</button>
+        <button class="btn sub" id="h-reset">この端末の記録を消す</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 先生用 -->
+  <section id="v-teacher" class="hidden">
+    <div class="sheet">
+      <p class="label">生徒の記録を集める</p>
+      <p class="muted">生徒が書き出した記録のファイルをまとめて選んでください（複数選べます）。読み込んだ内容はこの端末にだけ保存されます。</p>
+      <div class="row">
+        <label class="btn" for="t-file" style="cursor:pointer">記録のファイルを読み込む</label>
+        <input type="file" id="t-file" accept=".json,application/json" multiple class="hidden">
+        <button class="btn sub" id="t-demo">デモデータを読み込む</button>
+        <button class="btn sub" id="t-clear">読み込んだ記録を消す</button>
+        <button class="btn sub" id="t-csv">集計をCSVで保存</button>
+      </div>
+      <p class="muted" id="t-status" style="margin-top:8px"></p>
+    </div>
+    <div class="sheet">
+      <p class="label">利用状況</p>
+      <div class="tiles" id="t-tiles"></div>
+      <div class="table-wrap" style="margin-top:12px"><table id="t-students"></table></div>
+    </div>
+    <div class="grid2">
+      <div class="sheet">
+        <p class="label">まちがいの多い問題</p>
+        <div class="table-wrap"><table id="t-hard"></table></div>
+      </div>
+      <div class="sheet">
+        <p class="label">範囲ごとの正答率</p>
+        <div id="t-ranges"></div>
+      </div>
+    </div>
+    <div class="sheet">
+      <p class="label">生徒のふりかえり・感想</p>
+      <div class="table-wrap"><table id="t-comments"></table></div>
+    </div>
+    <div class="sheet">
+      <p class="label">先生の気づき</p>
+      <p class="muted">試行中に気づいたこと（使いやすさ、生徒の様子、運用上の課題など）を日付つきで残せます。</p>
+      <textarea id="t-note-text" placeholder="例：3組では入力に時間がかかる生徒が多かった。送り仮名の入力でつまずく。"></textarea>
+      <div class="row" style="margin-top:8px"><button class="btn sub" id="t-note-add">気づきを追加</button></div>
+      <div class="table-wrap" style="margin-top:10px"><table id="t-notes"></table></div>
+    </div>
+  </section>
+</div>
+
+<script id="kanji-data" type="application/json">{"title": "中学3年 漢字の読み書き（初期試作用）", "version": "2026-11-13", "ranges": [{"id": "read-on", "type": "read", "name": "読み：音読みの熟語", "note": "中学で学ぶ常用漢字を含む熟語の読み"}, {"id": "read-kun", "type": "read", "name": "読み：訓読み・送り仮名", "note": "送り仮名のつく動詞・形容詞の読み"}, {"id": "read-special", "type": "read", "name": "読み：特別な読み", "note": "熟字訓など、一字ずつに分けられない読み"}, {"id": "write-homophone", "type": "write", "name": "書き：同音異義語", "note": "読みが同じで意味の違う熟語の使い分け"}, {"id": "write-homokun", "type": "write", "name": "書き：同訓異字", "note": "訓読みが同じで意味の違う漢字の使い分け"}, {"id": "write-jukugo", "type": "write", "name": "書き：まちがえやすい熟語", "note": "形の似た漢字との書き分け"}, {"id": "write-yoji", "type": "write", "name": "書き：四字熟語", "note": "よく使う四字熟語の書き"}], "levels": [{"id": 1, "name": "基本"}, {"id": 2, "name": "標準"}, {"id": 3, "name": "発展"}], "questions": [{"id": "r001", "range": "read-on", "level": 2, "sentence": "先生の助言は【示唆】に富んでいた。", "answers": ["しさ"], "explanation": "それとなく教え示すこと。「唆」は訓読みで「そそのか(す)」。"}, {"id": "r002", "range": "read-on", "level": 2, "sentence": "チームで計画を最後まで【遂行】する。", "answers": ["すいこう"], "explanation": "物事を最後までやりとげること。「遂」の訓読みは「と(げる)」。"}, {"id": "r003", "range": "read-on", "level": 2, "sentence": "収入と支出の【均衡】を保つ。", "answers": ["きんこう"], "explanation": "つり合いがとれていること。「衡」はもともと「はかり」の意味。"}, {"id": "r004", "range": "read-on", "level": 3, "sentence": "天候は【漸次】回復に向かうでしょう。", "answers": ["ぜんじ"], "explanation": "しだいに、だんだんと。「漸」は「ようや(く)」とも読む。"}, {"id": "r005", "range": "read-on", "level": 1, "sentence": "生徒会が大会の【趣旨】を説明する。", "answers": ["しゅし"], "explanation": "物事のねらいや中心となる考え。「趣」の訓読みは「おもむき」。"}, {"id": "r006", "range": "read-on", "level": 2, "sentence": "来月から新しい法律が【施行】される。", "answers": ["しこう", "せこう"], "explanation": "法律などを実際に効力のあるものとして行うこと。「しこう」と読むのが一般的。工事を行う「施工（せこう）」と区別する。"}, {"id": "r007", "range": "read-on", "level": 2, "sentence": "事故を防ぐための【措置】を講じる。", "answers": ["そち"], "explanation": "物事がうまく運ぶように取り計らうこと。「措」は「お(く)」の意味。"}, {"id": "r008", "range": "read-on", "level": 1, "sentence": "地域に昔から伝わる【慣習】を大切にする。", "answers": ["かんしゅう"], "explanation": "その社会で昔から行われているしきたり。"}, {"id": "r009", "range": "read-on", "level": 1, "sentence": "美術館で絵画を【鑑賞】する。", "answers": ["かんしょう"], "explanation": "芸術作品を味わうこと。動植物などを見て楽しむ「観賞」との違いに注意。"}, {"id": "r010", "range": "read-on", "level": 2, "sentence": "専門家が環境への影響に【懸念】を示した。", "answers": ["けねん"], "explanation": "気にかかって不安に思うこと。「懸」は「けん」とも読むが、この熟語では「け」と読む。"}, {"id": "r011", "range": "read-on", "level": 2, "sentence": "祖父は【寡黙】だが、心の温かい人だ。", "answers": ["かもく"], "explanation": "口数が少ないこと。「寡」は「少ない」という意味。"}, {"id": "r012", "range": "read-on", "level": 1, "sentence": "痛みを【緩和】する薬を飲む。", "answers": ["かんわ"], "explanation": "きびしさや激しさをやわらげること。「緩」の訓読みは「ゆる(い)」。"}, {"id": "r013", "range": "read-on", "level": 2, "sentence": "練習の成果が【顕著】に表れた。", "answers": ["けんちょ"], "explanation": "際立って目につくこと。「著」は「いちじる(しい)」とも読む。"}, {"id": "r014", "range": "read-on", "level": 3, "sentence": "修学旅行の費用を【捻出】する。", "answers": ["ねんしゅつ"], "explanation": "苦労して費用や時間をひねり出すこと。「捻」は「ひねる」という意味。"}, {"id": "r015", "range": "read-on", "level": 3, "sentence": "【凡庸】な表現を避けて作文を書く。", "answers": ["ぼんよう"], "explanation": "平凡で、特にすぐれた点がないこと。「庸」は「ふつう」という意味。"}, {"id": "r016", "range": "read-on", "level": 2, "sentence": "【抑揚】をつけて詩を朗読する。", "answers": ["よくよう"], "explanation": "話す声の調子の上げ下げ。「抑」はおさえる、「揚」はあげる。"}, {"id": "r017", "range": "read-on", "level": 2, "sentence": "進路選択という人生の【岐路】に立つ。", "answers": ["きろ"], "explanation": "分かれ道。将来が決まる大事な場面のたとえにも使う。"}, {"id": "r018", "range": "read-on", "level": 1, "sentence": "地域の清掃活動に【貢献】する。", "answers": ["こうけん"], "explanation": "物事のために力を尽くして役立つこと。「貢」の訓読みは「みつ(ぐ)」。"}, {"id": "r019", "range": "read-on", "level": 2, "sentence": "新聞やテレビなどの【媒体】を通して情報を得る。", "answers": ["ばいたい"], "explanation": "情報などを伝える仲立ちとなるもの。「媒」は「なかだち」という意味。"}, {"id": "r020", "range": "read-on", "level": 1, "sentence": "友人と【頻繁】に連絡を取り合う。", "answers": ["ひんぱん"], "explanation": "しきりに行われること。「頻」は「しきりに」という意味。"}, {"id": "r021", "range": "read-on", "level": 2, "sentence": "【匿名】で意見を投稿する。", "answers": ["とくめい"], "explanation": "名前を隠すこと。「匿」は「かくす」という意味。"}, {"id": "r022", "range": "read-on", "level": 3, "sentence": "彼はチームの将来を担う【逸材】だ。", "answers": ["いつざい"], "explanation": "特にすぐれた才能をもつ人。「逸」には「すぐれる」という意味がある。"}, {"id": "r023", "range": "read-on", "level": 2, "sentence": "新しい機能を【搭載】したスマートフォン。", "answers": ["とうさい"], "explanation": "機械などに装備や機能を組み込むこと。「搭」は「のせる」という意味。"}, {"id": "r024", "range": "read-on", "level": 1, "sentence": "豊かな自然の【恩恵】を受ける。", "answers": ["おんけい"], "explanation": "めぐみ。利益や幸せを与えられること。「恵」の訓読みは「めぐ(む)」。"}, {"id": "r025", "range": "read-on", "level": 2, "sentence": "【斬新】なアイデアが採用された。", "answers": ["ざんしん"], "explanation": "発想などがきわだって新しいこと。「斬」の訓読みは「き(る)」。"}, {"id": "k001", "range": "read-kun", "level": 1, "sentence": "文化祭で音楽会を【催す】。", "answers": ["もよおす"], "explanation": "会などを開く。音読みは「サイ」（開催・催促）。"}, {"id": "k002", "range": "read-kun", "level": 1, "sentence": "くわしい説明を【省く】。", "answers": ["はぶく"], "explanation": "取り除いて減らす。「省みる（かえりみる）」という読みもある。"}, {"id": "k003", "range": "read-kun", "level": 2, "sentence": "大雨だったが、運よく被害を【免れる】ことができた。", "answers": ["まぬかれる", "まぬがれる"], "explanation": "好ましくない事態からのがれる。「まぬかれる」「まぬがれる」のどちらの読みも使われる。音読みは「メン」（免除）。"}, {"id": "k004", "range": "read-kun", "level": 2, "sentence": "試合に負けたことを【潔く】認める。", "answers": ["いさぎよく"], "explanation": "未練がなく、思い切りがよいさま。音読みは「ケツ」（清潔）。"}, {"id": "k005", "range": "read-kun", "level": 1, "sentence": "出発前の【慌ただしい】朝。", "answers": ["あわただしい"], "explanation": "落ち着かず、せわしないさま。「慌てる（あわてる）」と同じ字。"}, {"id": "k006", "range": "read-kun", "level": 1, "sentence": "この一年で【著しい】成長を見せた。", "answers": ["いちじるしい"], "explanation": "はっきりと目立つさま。音読みは「チョ」（著者・顕著）。"}, {"id": "k007", "range": "read-kun", "level": 2, "sentence": "無理な要求を【拒む】。", "answers": ["こばむ"], "explanation": "断る。受け入れない。音読みは「キョ」（拒否）。"}, {"id": "k008", "range": "read-kun", "level": 2, "sentence": "服のほころびを【繕う】。", "answers": ["つくろう"], "explanation": "破れたところを直す。音読みは「ゼン」（修繕）。"}, {"id": "k009", "range": "read-kun", "level": 2, "sentence": "物語の主人公が危機に【陥る】。", "answers": ["おちいる"], "explanation": "好ましくない状態になる。音読みは「カン」（欠陥）。"}, {"id": "k010", "range": "read-kun", "level": 3, "sentence": "理不尽な扱いに【憤る】。", "answers": ["いきどおる"], "explanation": "ひどく腹を立てる。音読みは「フン」（憤慨）。"}, {"id": "k011", "range": "read-kun", "level": 3, "sentence": "会費で活動の費用を【賄う】。", "answers": ["まかなう"], "explanation": "必要な費用などをやりくりする。音読みは「ワイ」（収賄）。"}, {"id": "k012", "range": "read-kun", "level": 3, "sentence": "人を【唆す】ような言葉に注意する。", "answers": ["そそのかす"], "explanation": "悪いことをするようにすすめる。音読みは「サ」（示唆）。"}, {"id": "s001", "range": "read-special", "level": 2, "sentence": "銀行で外国【為替】の手続きをする。", "answers": ["かわせ"], "explanation": "現金を直接送らずに、手形などでお金のやりとりをするしくみ。"}, {"id": "s002", "range": "read-special", "level": 2, "sentence": "創業二百年の【老舗】の和菓子店。", "answers": ["しにせ"], "explanation": "昔から代々続いている、信用のある店。"}, {"id": "s003", "range": "read-special", "level": 1, "sentence": "山で【雪崩】が起きる危険がある。", "answers": ["なだれ"], "explanation": "山の斜面に積もった雪が一度に崩れ落ちること。"}, {"id": "s004", "range": "read-special", "level": 2, "sentence": "夏の【名残】を感じる九月の夕暮れ。", "answers": ["なごり"], "explanation": "物事が過ぎ去った後に残る気配。「名残惜しい」のようにも使う。"}, {"id": "s005", "range": "read-special", "level": 2, "sentence": "【五月雨】が降り続く季節。", "answers": ["さみだれ"], "explanation": "陰暦五月ごろに降り続く長雨。今の梅雨にあたる。"}, {"id": "s006", "range": "read-special", "level": 3, "sentence": "初冬の山に【時雨】が降る。", "answers": ["しぐれ"], "explanation": "秋の終わりから冬の初めに、降ったりやんだりする雨。"}, {"id": "s007", "range": "read-special", "level": 3, "sentence": "未来を担う【若人】たち。", "answers": ["わこうど"], "explanation": "若い人。"}, {"id": "s008", "range": "read-special", "level": 3, "sentence": "決勝戦の行方を【固唾】をのんで見守る。", "answers": ["かたず"], "explanation": "緊張したときに口の中にたまるつば。「固唾をのむ」で、成り行きを心配しながら見守るさま。"}, {"id": "s009", "range": "read-special", "level": 1, "sentence": "【吹雪】で前が見えない。", "answers": ["ふぶき"], "explanation": "強い風とともに雪が激しく降ること。"}, {"id": "s010", "range": "read-special", "level": 3, "sentence": "【寄席】で落語を聞く。", "answers": ["よせ"], "explanation": "落語や漫才などの演芸を聞かせる場所。"}, {"id": "w001", "range": "write-homophone", "level": 1, "sentence": "来年度から新しい制度に【イコウ】する。", "choices": ["移行", "意向", "以降", "威光"], "answer": "移行", "explanation": "「移行」は別の状態に移ること。「意向」は考えや気持ち、「以降」はそれより後、「威光」は人を従わせる力。"}, {"id": "w002", "range": "write-homophone", "level": 1, "sentence": "まず相手の【イコウ】を確かめてから話を進める。", "choices": ["意向", "移行", "以降", "威光"], "answer": "意向", "explanation": "「意向」はどうしたいかという考え。「移行」は別の状態に移ること。"}, {"id": "w003", "range": "write-homophone", "level": 2, "sentence": "姉と私は【タイショウ】的な性格だ。", "choices": ["対照", "対称", "対象", "大将"], "answer": "対照", "explanation": "「対照」は二つのものの違いがはっきりしていること。「対称」はつり合いのとれた形、「対象」は働きかける相手。"}, {"id": "w004", "range": "write-homophone", "level": 2, "sentence": "この図形は左右【タイショウ】になっている。", "choices": ["対称", "対照", "対象", "大将"], "answer": "対称", "explanation": "「対称」は中心線などをはさんで両側が同じ形になっていること。"}, {"id": "w005", "range": "write-homophone", "level": 1, "sentence": "中学生を【タイショウ】としたアンケートを行う。", "choices": ["対象", "対照", "対称", "大将"], "answer": "対象", "explanation": "「対象」は行為や調査の相手・目標となるもの。"}, {"id": "w006", "range": "write-homophone", "level": 1, "sentence": "環境問題に【カンシン】をもつ。", "choices": ["関心", "感心", "歓心", "寒心"], "answer": "関心", "explanation": "「関心」は興味をもって注意を向けること。「感心」はりっぱだと心を動かされること。"}, {"id": "w007", "range": "write-homophone", "level": 3, "sentence": "先輩の【カンシン】を買おうとする。", "choices": ["歓心", "関心", "感心", "寒心"], "answer": "歓心", "explanation": "「歓心を買う」で、相手に気に入られようと機嫌をとること。「歓」はよろこぶという意味。"}, {"id": "w008", "range": "write-homophone", "level": 2, "sentence": "この製品の品質を【ホショウ】する。", "choices": ["保証", "保障", "補償"], "answer": "保証", "explanation": "「保証」はまちがいがないと請け合うこと。「保障」は地位や状態を守ること、「補償」は損害をつぐなうこと。"}, {"id": "w009", "range": "write-homophone", "level": 2, "sentence": "国民の生活の安全を【ホショウ】する。", "choices": ["保障", "保証", "補償"], "answer": "保障", "explanation": "「保障」は地位や状態がおかされないように守ること。「安全保障」「社会保障」など。"}, {"id": "w010", "range": "write-homophone", "level": 3, "sentence": "事故による損害を【ホショウ】する。", "choices": ["補償", "保証", "保障"], "answer": "補償", "explanation": "「補償」は与えた損害や損失をつぐなうこと。「補」はおぎなうという意味。"}, {"id": "w011", "range": "write-homophone", "level": 3, "sentence": "【キセイ】の考え方にとらわれない。", "choices": ["既成", "既製", "規制", "帰省"], "answer": "既成", "explanation": "「既成」はすでにできあがっていること。「既製」は既製服のように商品として作ってあること。"}, {"id": "w012", "range": "write-homophone", "level": 1, "sentence": "夏休みに祖父母の住む町へ【キセイ】する。", "choices": ["帰省", "既成", "規制", "既製"], "answer": "帰省", "explanation": "「帰省」は故郷に帰ること。「省」には「親の安否をたずねる」という意味がある。"}, {"id": "w013", "range": "write-homophone", "level": 3, "sentence": "研究者として真理を【ツイキュウ】する。", "choices": ["追究", "追求", "追及"], "answer": "追究", "explanation": "「追究」は学問などで、どこまでも明らかにしようとすること。「追求」は目的のものを手に入れようと追い求めること。"}, {"id": "w014", "range": "write-homophone", "level": 2, "sentence": "記者が政治家の責任を【ツイキュウ】する。", "choices": ["追及", "追究", "追求"], "answer": "追及", "explanation": "「追及」は責任や原因などをどこまでも問いただすこと。"}, {"id": "e001", "range": "write-homokun", "level": 2, "sentence": "ストップウォッチでタイムを【ハカる】。", "choices": ["計る", "測る", "量る", "図る"], "answer": "計る", "explanation": "時間や数をかぞえるときは「計る」。長さ・深さは「測る」、重さ・量は「量る」、計画・工夫は「図る」。"}, {"id": "e002", "range": "write-homokun", "level": 2, "sentence": "話し合いで問題の解決を【ハカる】。", "choices": ["図る", "計る", "測る", "量る"], "answer": "図る", "explanation": "実現をめざして計画したり工夫したりするときは「図る」。"}, {"id": "e003", "range": "write-homokun", "level": 2, "sentence": "ロープを下ろして池の深さを【ハカる】。", "choices": ["測る", "計る", "量る", "図る"], "answer": "測る", "explanation": "長さ・高さ・深さ・広さなどは「測る」。"}, {"id": "e004", "range": "write-homokun", "level": 1, "sentence": "部屋の窓を【アける】。", "choices": ["開ける", "明ける", "空ける"], "answer": "開ける", "explanation": "閉じているものをひらくときは「開ける」。"}, {"id": "e005", "range": "write-homokun", "level": 1, "sentence": "長い夜が【アける】。", "choices": ["明ける", "開ける", "空ける"], "answer": "明ける", "explanation": "朝になって明るくなる、ある期間が終わるときは「明ける」（梅雨が明ける）。"}, {"id": "e006", "range": "write-homokun", "level": 1, "sentence": "お年寄りのために席を【アける】。", "choices": ["空ける", "開ける", "明ける"], "answer": "空ける", "explanation": "中をからにする、場所や時間をあけるときは「空ける」。"}, {"id": "e007", "range": "write-homokun", "level": 2, "sentence": "生徒会の会議で議長を【ツトめる】。", "choices": ["務める", "努める", "勤める"], "answer": "務める", "explanation": "役目や任務を受け持つときは「務める」。会社などで働くのは「勤める」、力を尽くすのは「努める」。"}, {"id": "e008", "range": "write-homokun", "level": 2, "sentence": "クラス全員で問題の解決に【ツトめる】。", "choices": ["努める", "務める", "勤める"], "answer": "努める", "explanation": "力を尽くす、努力するときは「努める」。"}, {"id": "e009", "range": "write-homokun", "level": 2, "sentence": "大学で学問を【オサめる】。", "choices": ["修める", "収める", "納める", "治める"], "answer": "修める", "explanation": "学問や技術を身につけるときは「修める」。税金などを渡すのは「納める」、国などを安定させるのは「治める」。"}, {"id": "e010", "range": "write-homokun", "level": 2, "sentence": "大会で優秀な成績を【オサめる】。", "choices": ["収める", "修める", "納める", "治める"], "answer": "収める", "explanation": "成果や利益を得るときは「収める」。"}, {"id": "e011", "range": "write-homokun", "level": 2, "sentence": "ダイヤモンドは非常に【カタい】。", "choices": ["硬い", "固い", "堅い"], "answer": "硬い", "explanation": "外からの力に強く、形が変わりにくいときは「硬い」。"}, {"id": "e012", "range": "write-homokun", "level": 3, "sentence": "ほどけないようにひもを【カタく】結ぶ。", "choices": ["固く", "硬く", "堅く"], "answer": "固く", "explanation": "結びつきが強く、しっかりしていて動かないときは「固い」。"}, {"id": "h001", "range": "write-jukugo", "level": 2, "sentence": "【カンペキ】な演技を見せる。", "choices": ["完璧", "完壁", "完癖", "完碧"], "answer": "完璧", "explanation": "「璧」は宝石の玉。傷のない玉から、欠点がないことを表す。「壁（かべ）」と書きまちがえやすい。"}, {"id": "h002", "range": "write-jukugo", "level": 1, "sentence": "将来は医療の【センモン】家になりたい。", "choices": ["専門", "専問", "選門", "専紋"], "answer": "専門", "explanation": "「門」はある分野という意味。「問」と書きまちがえやすい。"}, {"id": "h003", "range": "write-jukugo", "level": 1, "sentence": "職場体験は【キチョウ】な経験になった。", "choices": ["貴重", "危重", "帰重", "喜重"], "answer": "貴重", "explanation": "とても大切なこと。「貴」は「とうとい」という意味。"}, {"id": "h004", "range": "write-jukugo", "level": 1, "sentence": "都市の【コウガイ】に新しい住宅地ができた。", "choices": ["郊外", "効外", "絞外", "交外"], "answer": "郊外", "explanation": "都市の周辺の地域。「郊」は町はずれという意味。"}, {"id": "h005", "range": "write-jukugo", "level": 2, "sentence": "学校新聞に記事を【ケイサイ】する。", "choices": ["掲載", "掲裁", "渇載", "掲栽"], "answer": "掲載", "explanation": "「掲」はかかげる、「載」はのせる。形の似た「裁（さばく）」「栽（うえる）」に注意。"}, {"id": "h006", "range": "write-jukugo", "level": 1, "sentence": "進路は【シンチョウ】に考えて決めたい。", "choices": ["慎重", "真重", "慎長", "深重"], "answer": "慎重", "explanation": "注意深く、軽々しく行動しないこと。「慎」は「つつし(む)」。"}, {"id": "h007", "range": "write-jukugo", "level": 2, "sentence": "思ったことを【ソッチョク】に話す。", "choices": ["率直", "卒直", "率値", "卒値"], "answer": "率直", "explanation": "飾らずありのままであること。「卒直」はまちがい。"}, {"id": "h008", "range": "write-jukugo", "level": 2, "sentence": "【ゲンカク】な規則を守る。", "choices": ["厳格", "厳角", "原格", "厳確"], "answer": "厳格", "explanation": "きびしく、不正やあいまいさを許さないこと。「格」は決まりという意味。"}, {"id": "h009", "range": "write-jukugo", "level": 2, "sentence": "和やかな【フンイキ】の教室。", "choices": ["雰囲気", "雰為気", "紛囲気", "雰衣気"], "answer": "雰囲気", "explanation": "その場に自然に感じられる気分。「雰」はもともと大気の様子を表す。"}, {"id": "h010", "range": "write-jukugo", "level": 2, "sentence": "世界記録を大きく上回る【キョウイ】的な記録が出た。", "choices": ["驚異", "脅威", "驚威", "強異"], "answer": "驚異", "explanation": "「驚異」はおどろくほどすばらしいこと。「脅威」はおびやかす力。"}, {"id": "h011", "range": "write-jukugo", "level": 1, "sentence": "地域の方々に【ケイイ】を表す。", "choices": ["敬意", "経緯", "敬依", "恵意"], "answer": "敬意", "explanation": "「敬意」は尊敬する気持ち。「経緯」は物事のいきさつ。"}, {"id": "h012", "range": "write-jukugo", "level": 2, "sentence": "議論が問題の【カクシン】に触れる。", "choices": ["核心", "確信", "革新", "核真"], "answer": "核心", "explanation": "「核心」は物事の中心となる大切なところ。「確信」はかたく信じること、「革新」は新しく改めること。"}, {"id": "y001", "range": "write-yoji", "level": 1, "sentence": "テストの結果に【イッキイチユウ】する。", "choices": ["一喜一憂", "一気一憂", "一喜一有", "一記一憂"], "answer": "一喜一憂", "explanation": "状況が変わるたびに、喜んだり心配したりすること。"}, {"id": "y002", "range": "write-yoji", "level": 2, "sentence": "自分の作品を【ジガジサン】する。", "choices": ["自画自賛", "自我自賛", "字画自賛", "自画持賛"], "answer": "自画自賛", "explanation": "自分で自分のことをほめること。自分の描いた絵に自分でほめる言葉を書くことから。"}, {"id": "y003", "range": "write-yoji", "level": 2, "sentence": "クラス全員が【イクドウオン】に賛成した。", "choices": ["異口同音", "異句同音", "異口同温", "意口同音"], "answer": "異口同音", "explanation": "多くの人が口をそろえて同じことを言うこと。"}, {"id": "y004", "range": "write-yoji", "level": 2, "sentence": "解決の糸口が見えず【ゴリムチュウ】の状態だ。", "choices": ["五里霧中", "五里夢中", "五利霧中", "五里無中"], "answer": "五里霧中", "explanation": "手がかりがなく、どうすればよいか分からないこと。深い霧の中にいる様子から。「夢中」と書きまちがえやすい。"}, {"id": "y005", "range": "write-yoji", "level": 2, "sentence": "【ゼンダイミモン】の出来事に町中が驚いた。", "choices": ["前代未聞", "前代未問", "全代未聞", "前題未聞"], "answer": "前代未聞", "explanation": "これまでに聞いたことがないような、めずらしいこと。"}, {"id": "y006", "range": "write-yoji", "level": 2, "sentence": "新学期を迎え【シンキイッテン】がんばる。", "choices": ["心機一転", "新規一転", "心気一転", "心機一点"], "answer": "心機一転", "explanation": "あることをきっかけに、気持ちをすっかり入れかえること。「新規」と書きまちがえやすい。"}, {"id": "y007", "range": "write-yoji", "level": 3, "sentence": "彼は【タイキバンセイ】の人だと言われている。", "choices": ["大器晩成", "大器晩生", "大気晩成", "大器晩製"], "answer": "大器晩成", "explanation": "すぐれた人物は、時間をかけて大成するということ。"}, {"id": "y008", "range": "write-yoji", "level": 2, "sentence": "長年の友人とは【イシンデンシン】で通じ合う。", "choices": ["以心伝心", "意心伝心", "以心電信", "以身伝心"], "answer": "以心伝心", "explanation": "言葉にしなくても気持ちが通じ合うこと。"}]}</script>
+<script>
+(function(){
+'use strict';
+const DATA = JSON.parse(document.getElementById('kanji-data').textContent);
+const Q = DATA.questions;
+const QBY = Object.fromEntries(Q.map(q => [q.id, q]));
+const RANGE = Object.fromEntries(DATA.ranges.map(r => [r.id, r]));
+const LEVEL = Object.fromEntries(DATA.levels.map(l => [l.id, l.name]));
+const KEY = 'kanjiNote3.v1', TKEY = 'kanjiNote3.teacher.v1', SKEY = 'kanjiNote3.setup.v1';
+const MAX_MS = 180000; // 1問あたりの学習時間の上限（放置時間を数えないため）
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+// ---------- 保存 ----------
+function load(key, def){ try{ const v = localStorage.getItem(key); return v ? JSON.parse(v) : def; }catch(e){ return def; } }
+function save(key, v){ try{ localStorage.setItem(key, JSON.stringify(v)); }catch(e){} }
+let store = load(KEY, null) || { student:null, attempts:[], sessions:[] };
+const persist = () => save(KEY, store);
+
+// ---------- 共通の計算 ----------
+function fmtTime(ms){
+  const m = Math.round(ms/60000);
+  if (m < 1) return Math.max(0, Math.round(ms/1000)) + '秒';
+  if (m < 60) return m + '分';
+  return Math.floor(m/60) + '時間' + (m%60) + '分';
+}
+function fmtDate(t){ const d = new Date(t); return (d.getMonth()+1)+'/'+d.getDate()+' '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0'); }
+function pct(a,b){ return b ? Math.round(a/b*100) : 0; }
+function targetOf(q){ const m = q.sentence.match(/【(.+?)】/); return m ? m[1] : ''; }
+function rightAnswer(q){ return q.answers ? q.answers[0] : q.answer; }
+function kanjiOf(q){ return RANGE[q.range].type === 'read' ? targetOf(q) : q.answer; }
+
+// 問題ごとの状態：mastered（直近2回連続正解）/ partial（直近は正解）/ weak（直近は不正解）/ new
+function questionStates(attempts){
+  const by = {};
+  for (const a of attempts){ (by[a.qid] = by[a.qid] || []).push(a); }
+  const st = {};
+  for (const q of Q){
+    const list = by[q.id] || [];
+    const wrong = list.filter(a => !a.correct).length;
+    let s = 'new';
+    if (list.length){
+      const last = list[list.length-1], prev = list[list.length-2];
+      if (!last.correct) s = 'weak';
+      else if (prev && prev.correct) s = 'mastered';
+      else if (!prev && list.length === 1) s = 'partial';
+      else s = 'partial';
+    }
+    st[q.id] = { state:s, tries:list.length, wrong, last:list.length ? list[list.length-1].at : 0 };
+  }
+  return st;
+}
+function summarize(s){ // s: {student, attempts, sessions}
+  const at = s.attempts || [];
+  const correct = at.filter(a => a.correct).length;
+  const ms = at.reduce((t,a) => t + Math.min(a.ms||0, MAX_MS), 0);
+  const st = questionStates(at);
+  const mastered = Object.values(st).filter(x => x.state === 'mastered').length;
+  const weak = Object.values(st).filter(x => x.state === 'weak').length;
+  return { tries:at.length, correct, rate:pct(correct, at.length), ms, mastered, weak, st, sessions:(s.sessions||[]).length,
+    lastAt: at.length ? at[at.length-1].at : 0 };
+}
+
+// ---------- 画面の切り替え ----------
+const VIEWS = ['profile','setup','quiz','result','history','teacher'];
+function show(v){
+  VIEWS.forEach(x => $('v-'+x).classList.toggle('hidden', x !== v));
+  const tab = v === 'history' ? 'history' : v === 'teacher' ? 'teacher' : 'learn';
+  document.querySelectorAll('#nav button').forEach(b => b.setAttribute('aria-current', b.dataset.view === tab ? 'true' : 'false'));
+  window.scrollTo(0,0);
+}
+$('nav').addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return;
+  if (quiz && !quiz.done && quiz.items.length && quiz.results.length && !confirm('解答の途中です。ここでやめて記録しますか？')) return;
+  if (quiz && !quiz.done && quiz.results.length) finishQuiz(false);
+  quiz = null;
+  if (b.dataset.view === 'learn') openLearn();
+  if (b.dataset.view === 'history') openHistory();
+  if (b.dataset.view === 'teacher') openTeacher();
+});
+function renderWho(){
+  const s = store.student;
+  $('who').textContent = s ? `3年${s.cls}組 ${s.no}番 ${s.name}` : '';
+}
+
+// ---------- プロフィール ----------
+(function(){
+  const sel = $('p-cls');
+  for (let i=1;i<=10;i++){ const o = document.createElement('option'); o.value = o.textContent = i; sel.appendChild(o); }
+})();
+function openProfile(){
+  const s = store.student;
+  if (s){ $('p-cls').value = s.cls; $('p-no').value = s.no; $('p-name').value = s.name; }
+  show('profile'); $('p-name').focus();
+}
+$('p-save').addEventListener('click', () => {
+  const name = $('p-name').value.trim(), no = $('p-no').value.trim();
+  if (!name || !no){ alert('番号と名前を入力してください。'); return; }
+  store.student = { id: store.student?.id || ('s-'+Date.now().toString(36)+Math.random().toString(36).slice(2,6)), cls:$('p-cls').value, no, name };
+  persist(); renderWho(); openLearn();
+});
+
+// ---------- 学習の設定 ----------
+let setup = Object.assign({ ranges: DATA.ranges.map(r => r.id), levels:[1,2,3], count:'10', order:'recommend' }, load(SKEY, {}));
+function buildSetup(){
+  const cnt = {}; Q.forEach(q => cnt[q.range] = (cnt[q.range]||0) + 1);
+  const box = type => DATA.ranges.filter(r => r.type === type).map(r =>
+    `<label class="chk"><input type="checkbox" name="rng" value="${r.id}" ${setup.ranges.includes(r.id)?'checked':''}><span>${esc(r.name)}<br><span class="muted">${esc(r.note)}</span></span><span class="n">${cnt[r.id]||0}問</span></label>`).join('');
+  $('ranges-read').innerHTML = '<h2 class="mincho">読み</h2>' + box('read');
+  $('ranges-write').innerHTML = '<h2 class="mincho">書き</h2>' + box('write');
+  $('levels').innerHTML = DATA.levels.map(l => `<label class="pill"><input type="checkbox" name="lv" value="${l.id}" ${setup.levels.includes(l.id)?'checked':''}><span>${esc(l.name)}</span></label>`).join('');
+  $('counts').innerHTML = ['5','10','20','all'].map(c => `<label class="pill"><input type="radio" name="cnt" value="${c}" ${setup.count===c?'checked':''}><span>${c==='all'?'すべて':c+'問'}</span></label>`).join('');
+  $('orders').innerHTML = [['recommend','おすすめ（苦手・まだ解いていない問題から）'],['random','ランダム']].map(([v,t]) =>
+    `<label class="pill"><input type="radio" name="ord" value="${v}" ${setup.order===v?'checked':''}><span>${t}</span></label>`).join('');
+  updateSetupInfo();
+}
+function readSetup(){
+  setup = {
+    ranges:[...document.querySelectorAll('input[name=rng]:checked')].map(i => i.value),
+    levels:[...document.querySelectorAll('input[name=lv]:checked')].map(i => +i.value),
+    count:(document.querySelector('input[name=cnt]:checked')||{}).value || '10',
+    order:(document.querySelector('input[name=ord]:checked')||{}).value || 'recommend'
+  };
+  save(SKEY, setup);
+}
+function poolOf(){ return Q.filter(q => setup.ranges.includes(q.range) && setup.levels.includes(q.level)); }
+function updateSetupInfo(){
+  readSetup();
+  const n = poolOf().length;
+  const weakN = Object.values(summarize(store).st).filter(x => x.state === 'weak').length;
+  $('setup-info').textContent = n ? `選んだ範囲の問題は ${n} 問あります。` : '範囲と難しさを1つ以上選んでください。';
+  $('start').disabled = !n;
+  $('start-weak').disabled = !weakN;
+  $('start-weak').textContent = weakN ? `苦手な漢字だけ復習する（${weakN}問）` : '苦手な漢字だけ復習する';
+}
+$('v-setup').addEventListener('change', updateSetupInfo);
+$('sel-all').addEventListener('click', () => { document.querySelectorAll('input[name=rng]').forEach(i => i.checked = true); updateSetupInfo(); });
+$('sel-none').addEventListener('click', () => { document.querySelectorAll('input[name=rng]').forEach(i => i.checked = false); updateSetupInfo(); });
+function openLearn(){
+  if (!store.student){ openProfile(); return; }
+  buildSetup(); show('setup');
+}
+function shuffle(a){ a = a.slice(); for (let i=a.length-1;i>0;i--){ const j = Math.floor(Math.random()*(i+1)); [a[i],a[j]] = [a[j],a[i]]; } return a; }
+function pickQuestions(){
+  let pool = shuffle(poolOf());
+  if (setup.order === 'recommend'){
+    const st = summarize(store).st, pri = {weak:0, new:1, partial:2, mastered:3};
+    pool.sort((a,b) => pri[st[a.id].state] - pri[st[b.id].state] || st[a.id].last - st[b.id].last);
+  }
+  const n = setup.count === 'all' ? pool.length : Math.min(+setup.count, pool.length);
+  return shuffle(pool.slice(0, n));
+}
+$('start').addEventListener('click', () => { readSetup(); startQuiz(pickQuestions(), '通常'); });
+$('start-weak').addEventListener('click', startWeak);
+$('h-review').addEventListener('click', startWeak);
+function startWeak(){
+  const st = summarize(store).st;
+  const items = shuffle(Q.filter(q => st[q.id].state === 'weak'));
+  if (!items.length){ alert('いま苦手な漢字はありません。'); return; }
+  startQuiz(items, '苦手の復習');
+}
+
+// ---------- 解答 ----------
+let quiz = null;
+function startQuiz(items, mode){
+  if (!items.length) return;
+  quiz = { id:'ss-'+Date.now().toString(36), mode, items, i:0, results:[], startedAt:Date.now(), done:false,
+    ranges:[...new Set(items.map(q => q.range))] };
+  show('quiz'); renderQuestion();
+}
+function normalize(s){
+  return String(s).normalize('NFKC').replace(/[\s　]/g,'')
+    .replace(/[ァ-ヶ]/g, c => String.fromCharCode(c.charCodeAt(0) - 0x60));
+}
+function renderQuestion(){
+  const q = quiz.items[quiz.i], r = RANGE[q.range];
+  quiz.shownAt = Date.now(); quiz.answered = false;
+  $('q-count').textContent = `${quiz.i+1} / ${quiz.items.length} 問目` + (quiz.mode !== '通常' ? `（${quiz.mode}）` : '');
+  $('q-bar').style.width = pct(quiz.i, quiz.items.length) + '%';
+  $('q-meta').innerHTML = `<span class="tag">${esc(r.name)}</span><span class="tag">${esc(LEVEL[q.level])}</span>`;
+  $('q-sentence').innerHTML = esc(q.sentence).replace(/【(.+?)】/, '<b>$1</b>');
+  $('q-feedback').classList.add('hidden');
+  if (r.type === 'read'){
+    $('q-instr').textContent = '赤い線の漢字の読みを、ひらがなで入力しましょう。';
+    $('q-area').innerHTML = `<div class="row"><input type="text" class="answer-input" id="q-input" autocomplete="off" lang="ja" aria-label="読みをひらがなで入力"><button class="btn" id="q-submit">答える</button></div><div class="kbd" style="margin-top:6px">Enterキーでも答えられます</div>`;
+    const inp = $('q-input'); inp.focus();
+    inp.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.isComposing && !quiz.answered){ e.preventDefault(); e.stopPropagation(); submitRead(); } });
+    $('q-submit').addEventListener('click', submitRead);
+  } else {
+    $('q-instr').textContent = '赤い線のカタカナにあてはまる漢字を選びましょう。';
+    const ch = shuffle(q.choices); quiz.choiceOrder = ch;
+    $('q-area').innerHTML = `<div class="choices">${ch.map((c,i) => `<button class="choice mincho" data-v="${esc(c)}"><span class="k">${i+1}</span>${esc(c)}</button>`).join('')}</div><div class="kbd" style="margin-top:6px">数字キー（1〜${ch.length}）でも選べます</div>`;
+    $('q-area').querySelectorAll('.choice').forEach(b => b.addEventListener('click', () => submitChoice(b.dataset.v)));
+  }
+}
+function submitRead(){
+  if (quiz.answered) return;
+  const v = $('q-input').value;
+  if (!normalize(v)){ $('q-input').focus(); return; }
+  const q = quiz.items[quiz.i];
+  const ok = q.answers.some(a => normalize(a) === normalize(v));
+  $('q-input').readOnly = true; $('q-submit').disabled = true;
+  record(q, v.trim(), ok);
+}
+function submitChoice(v){
+  if (quiz.answered) return;
+  const q = quiz.items[quiz.i], ok = v === q.answer;
+  $('q-area').querySelectorAll('.choice').forEach(b => {
+    b.disabled = true;
+    if (b.dataset.v === q.answer) b.classList.add('correct');
+    else if (b.dataset.v === v) b.classList.add('wrong');
+  });
+  record(q, v, ok);
+}
+function record(q, answer, ok){
+  quiz.answered = true;
+  const ms = Date.now() - quiz.shownAt;
+  const a = { qid:q.id, answer, correct:ok, ms, at:Date.now(), session:quiz.id };
+  store.attempts.push(a); persist();
+  quiz.results.push(a);
+  const isRead = RANGE[q.range].type === 'read';
+  const last = quiz.i === quiz.items.length - 1;
+  const fb = $('q-feedback');
+  fb.innerHTML = `<div class="mark ${ok?'ok':'ng'} mincho" aria-hidden="true">${ok?'○':'×'}</div>
+    <div class="fb-body" style="flex:1">
+      <p class="${ok?'ok-t':'ng-t'}">${ok?'正解！':'ざんねん'}</p>
+      <p class="ans mincho">正答：${isRead ? esc(targetOf(q))+'（'+esc(q.answers.join('・'))+'）' : esc(q.answer)}</p>
+      ${!ok ? `<p class="muted">あなたの答え：${esc(answer)}</p>` : ''}
+      <p>${esc(q.explanation)}</p>
+      <div class="row" style="margin-top:10px"><button class="btn" id="q-next">${last?'結果を見る':'次の問題へ'}</button><span class="kbd">Enterキーでも進めます</span></div>
+    </div>`;
+  fb.classList.remove('hidden');
+  $('q-next').addEventListener('click', nextQuestion);
+  $('q-next').focus();
+}
+function nextQuestion(){
+  if (!quiz || !quiz.answered) return;
+  if (quiz.i < quiz.items.length - 1){ quiz.i++; renderQuestion(); }
+  else finishQuiz(true);
+}
+document.addEventListener('keydown', e => {
+  if (!quiz || $('v-quiz').classList.contains('hidden')) return;
+  if (quiz.answered && e.key === 'Enter' && !e.isComposing && e.target.id !== 'q-next'){ e.preventDefault(); nextQuestion(); return; }
+  if (!quiz.answered && RANGE[quiz.items[quiz.i].range].type === 'write' && /^[1-9]$/.test(e.key)){
+    const v = quiz.choiceOrder[+e.key - 1]; if (v) submitChoice(v);
+  }
+});
+$('quit').addEventListener('click', () => {
+  if (!quiz.results.length){ quiz = null; openLearn(); return; }
+  if (confirm('ここでやめますか？ 解いた問題までの結果が記録されます。')) finishQuiz(true);
+});
+
+// ---------- 結果 ----------
+let lastSession = null;
+function finishQuiz(showResult){
+  const rs = quiz.results;
+  const correct = rs.filter(a => a.correct).length;
+  const ms = rs.reduce((t,a) => t + Math.min(a.ms, MAX_MS), 0);
+  const sess = { id:quiz.id, mode:quiz.mode, startedAt:quiz.startedAt, endedAt:Date.now(), ranges:quiz.ranges,
+    planned:quiz.items.length, count:rs.length, correct, score:pct(correct, rs.length), ms, comment:'' };
+  store.sessions.push(sess); persist();
+  quiz.done = true; lastSession = sess;
+  const items = rs.map(a => QBY[a.qid]);
+  const wrongItems = rs.filter(a => !a.correct).map(a => QBY[a.qid]);
+  quiz = null;
+  if (!showResult) return;
+  $('r-tiles').innerHTML = tile(sess.score, '点', '得点（100点満点）') + tile(sess.correct+' / '+sess.count, '問', '正解した問題') + tile(fmtTime(ms), '', '学習時間');
+  const msg = sess.score === 100 ? '全問正解です。よくがんばりました。' : sess.score >= 80 ? 'よくできました。まちがえた漢字を確かめておきましょう。' : sess.score >= 50 ? 'もう少しです。まちがえた問題をもう一度解いてみましょう。' : '解説を読んで、まちがえた問題にもう一度挑戦しましょう。';
+  $('r-message').textContent = msg;
+  $('r-table').innerHTML = '<tr><th></th><th>問題</th><th>正答</th><th>あなたの答え</th></tr>' + rs.map(a => {
+    const q = QBY[a.qid];
+    return `<tr><td class="${a.correct?'ok-t':'ng-t'}">${a.correct?'○':'×'}</td><td class="mincho">${esc(q.sentence).replace(/【(.+?)】/,'<b>$1</b>')}</td><td class="mincho">${esc(rightAnswer(q))}</td><td>${esc(a.answer)}</td></tr>`;
+  }).join('');
+  $('r-comment').value = ''; $('r-saved').textContent = '';
+  $('r-retry-wrong').disabled = !wrongItems.length;
+  $('r-retry-wrong').onclick = () => startQuiz(shuffle(wrongItems), 'まちがえた問題');
+  show('result');
+}
+function tile(v, unit, t){ return `<div class="tile"><div class="v">${esc(v)}<small>${esc(unit)}</small></div><div class="t">${esc(t)}</div></div>`; }
+$('r-save-comment').addEventListener('click', () => {
+  if (!lastSession) return;
+  const s = store.sessions.find(x => x.id === lastSession.id);
+  s.comment = $('r-comment').value.trim(); persist();
+  $('r-saved').textContent = '保存しました。';
+});
+$('r-again').addEventListener('click', openLearn);
+$('r-history').addEventListener('click', openHistory);
+
+// ---------- 学習の記録 ----------
+function openHistory(){
+  if (!store.student){ openProfile(); return; }
+  const sm = summarize(store);
+  $('h-tiles').innerHTML =
+    tile(sm.tries, '問', '取り組んだ問題数（のべ）') +
+    tile(sm.rate, '%', '正答率') +
+    tile(fmtTime(sm.ms), '', '学習時間の合計') +
+    tile(sm.mastered + ' / ' + Q.length, '', '習得した漢字') +
+    tile(sm.sessions, '回', '学習した回数');
+  // 成長：最初の3回と最近の3回の正答率をくらべる
+  const ss = store.sessions.filter(s => s.count);
+  if (ss.length >= 4){
+    const avg = a => Math.round(a.reduce((t,s) => t + s.correct, 0) / Math.max(1, a.reduce((t,s) => t + s.count, 0)) * 100);
+    const first = avg(ss.slice(0,3)), recent = avg(ss.slice(-3)), diff = recent - first;
+    $('h-growth').textContent = `はじめの3回の正答率は ${first}%、最近の3回は ${recent}% です。` + (diff > 0 ? `${diff}ポイント上がりました。` : diff < 0 ? '難しい範囲に挑戦しているときは下がることもあります。' : '');
+  } else {
+    $('h-growth').textContent = ss.length ? `あと${4-ss.length}回学習すると、はじめのころとの比較が表示されます。` : 'まだ学習の記録がありません。「学習する」から始めましょう。';
+  }
+  renderChart(ss.slice(-20));
+  // 範囲ごとの習得状況
+  $('h-bars').innerHTML = DATA.ranges.map(r => {
+    const qs = Q.filter(q => q.range === r.id), n = qs.length;
+    const c = {mastered:0, partial:0, weak:0}; qs.forEach(q => { const s = sm.st[q.id].state; if (c[s] !== undefined) c[s]++; });
+    return `<div class="bar"><span>${esc(r.name.replace('：',' '))}</span><span class="track" role="img" aria-label="習得${c.mastered}、あと一歩${c.partial}、苦手${c.weak}、全${n}問"><i class="seg-m" style="width:${c.mastered/n*100}%"></i><i class="seg-p" style="width:${c.partial/n*100}%"></i><i class="seg-w" style="width:${c.weak/n*100}%"></i></span><span class="muted" style="text-align:right">${c.mastered}/${n}</span></div>`;
+  }).join('');
+  // 苦手な漢字
+  const weak = Q.filter(q => sm.st[q.id].state === 'weak' || (sm.st[q.id].wrong >= 2 && sm.st[q.id].state !== 'mastered'))
+    .sort((a,b) => sm.st[b.id].wrong - sm.st[a.id].wrong);
+  $('h-weak').innerHTML = weak.length ? '<div class="weak-list">' + weak.map(q => {
+    const t = sm.st[q.id];
+    return `<div class="weak"><div class="w mincho">${esc(kanjiOf(q))}${RANGE[q.range].type==='read' ? '<span class="muted">（'+esc(q.answers[0])+'）</span>' : ''}</div><div class="muted">${esc(RANGE[q.range].name)}・${t.tries}回中${t.wrong}回まちがい</div><div>${esc(q.explanation)}</div></div>`;
+  }).join('') + '</div>' : '<p class="empty">いま苦手な漢字はありません。</p>';
+  $('h-review').disabled = !Q.some(q => sm.st[q.id].state === 'weak');
+  // 履歴
+  $('h-sessions').innerHTML = ss.length ? '<tr><th>日時</th><th>内容</th><th class="num">問題数</th><th class="num">得点</th><th class="num">時間</th><th>ふりかえり</th></tr>' +
+    ss.slice().reverse().map(s => `<tr><td>${fmtDate(s.startedAt)}</td><td>${esc(s.mode==='通常' ? s.ranges.map(id => RANGE[id] ? RANGE[id].name.split('：')[1] : id).join('、') : s.mode)}</td><td class="num">${s.count}</td><td class="num">${s.score}</td><td class="num">${fmtTime(s.ms)}</td><td>${esc(s.comment||'')}</td></tr>`).join('')
+    : '<tr><td class="empty">まだ記録がありません。</td></tr>';
+  show('history');
+}
+function renderChart(ss){
+  if (!ss.length){ $('h-chart').innerHTML = '<p class="empty">学習するとグラフが表示されます。</p>'; return; }
+  const W = 440, H = 200, L = 34, R = 10, T = 12, B = 26;
+  const x = i => ss.length === 1 ? (L + (W-L-R)/2) : L + i * (W-L-R) / (ss.length-1);
+  const y = v => T + (100 - v) * (H-T-B) / 100;
+  let g = '';
+  [0,50,100].forEach(v => g += `<line class="axis" x1="${L}" x2="${W-R}" y1="${y(v)}" y2="${y(v)}"/><text class="lbl" x="${L-6}" y="${y(v)+4}" text-anchor="end">${v}</text>`);
+  const pts = ss.map((s,i) => `${x(i)},${y(s.score)}`).join(' ');
+  g += `<polyline class="ln" points="${pts}"/>`;
+  g += ss.map((s,i) => `<circle class="dot" cx="${x(i)}" cy="${y(s.score)}" r="3.5"><title>${fmtDate(s.startedAt)} ${s.score}点（${s.correct}/${s.count}問）</title></circle>`).join('');
+  g += `<text class="lbl" x="${L}" y="${H-6}">${fmtDate(ss[0].startedAt).split(' ')[0]}</text><text class="lbl" x="${W-R}" y="${H-6}" text-anchor="end">${fmtDate(ss[ss.length-1].startedAt).split(' ')[0]}</text>`;
+  $('h-chart').innerHTML = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="正答率の推移">${g}</svg>`;
+}
+function download(name, text, type){
+  const blob = new Blob([text], {type}); const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click();
+  setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500);
+}
+$('h-export').addEventListener('click', () => {
+  const s = store.student, d = new Date();
+  const ymd = d.getFullYear() + String(d.getMonth()+1).padStart(2,'0') + String(d.getDate()).padStart(2,'0');
+  download(`漢字ノート_3年${s.cls}組${s.no}番_${ymd}.json`,
+    JSON.stringify({ app:'kanjiNote3', dataVersion:DATA.version, exportedAt:Date.now(), student:s, attempts:store.attempts, sessions:store.sessions }), 'application/json');
+});
+$('h-profile').addEventListener('click', openProfile);
+$('h-reset').addEventListener('click', () => {
+  if (!confirm('この端末の学習の記録をすべて消します。先に「記録を書き出す」で保存しましたか？')) return;
+  store = { student:store.student, attempts:[], sessions:[] }; persist(); openHistory();
+});
+
+// ---------- 先生用 ----------
+let tstore = load(TKEY, { students:{}, notes:[] });
+const tpersist = () => save(TKEY, tstore);
+function openTeacher(){ renderTeacher(); show('teacher'); }
+$('t-file').addEventListener('change', async e => {
+  let ok = 0, ng = 0;
+  for (const f of e.target.files){
+    try{
+      const d = JSON.parse(await f.text());
+      if (d.app !== 'kanjiNote3' || !d.student) throw new Error();
+      tstore.students[d.student.id] = { student:d.student, attempts:d.attempts||[], sessions:d.sessions||[], importedAt:Date.now() };
+      ok++;
+    }catch(err){ ng++; }
+  }
+  tpersist(); e.target.value = '';
+  $('t-status').textContent = `${ok}人分を読み込みました。` + (ng ? `${ng}件は読み込めませんでした（漢字ノートの記録ではないファイル）。` : '');
+  renderTeacher();
+});
+$('t-clear').addEventListener('click', () => { if (confirm('読み込んだ生徒の記録を消します（先生の気づきは残ります）。')){ tstore.students = {}; tpersist(); $('t-status').textContent = ''; renderTeacher(); } });
+$('t-demo').addEventListener('click', () => {
+  // 動作確認用の架空データ（30人・数回ずつ）
+  let seed = 7; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+  const fam = ['青木','石田','上野','遠藤','大川','加藤','木村','小林','佐藤','清水','鈴木','高橋','田中','中村','西田','長谷川','林','藤田','前田','松本','村上','森','山口','山本','吉田','渡辺','池田','川口','近藤','斎藤'];
+  const now = Date.now(), day = 86400000;
+  for (let i=0;i<30;i++){
+    const id = 'demo-'+i, skill = 0.45 + rnd()*0.45, cls = String(1 + (i % 3)), no = String(Math.floor(i/3)+1);
+    const attempts = [], sessions = [];
+    const nSess = 1 + Math.floor(rnd()*6);
+    for (let s=0;s<nSess;s++){
+      const start = now - (14 - s*2) * day + Math.floor(rnd()*8)*3600000, sid = 'ds-'+i+'-'+s;
+      const qs = shuffle(Q).slice(0, 10); let c = 0, ms = 0;
+      qs.forEach((q,k) => {
+        const p = Math.min(0.97, skill + s*0.04 - (q.level-2)*0.12);
+        const ok = rnd() < p, t = 6000 + Math.floor(rnd()*20000);
+        attempts.push({ qid:q.id, answer: ok ? rightAnswer(q) : (q.choices ? q.choices.find(x => x !== q.answer) : 'ー'), correct:ok, ms:t, at:start + k*t, session:sid });
+        if (ok) c++; ms += t;
+      });
+      const comments = ['','','','','','','','','','','同音異義語がむずかしかった。','すぐに答えが分かるのがよい。','解説で意味が分かった。','もっと問題数を増やしてほしい。','入力に時間がかかった。'];
+      sessions.push({ id:sid, mode:'通常', startedAt:start, endedAt:start+ms, ranges:[...new Set(qs.map(q=>q.range))], planned:10, count:10, correct:c, score:c*10, ms, comment: comments[Math.floor(rnd()*comments.length)] });
+    }
+    tstore.students[id] = { student:{ id, cls, no, name:'（デモ）'+fam[i] }, attempts, sessions, importedAt:now, demo:true };
+  }
+  tpersist(); $('t-status').textContent = 'デモデータ（架空の30人分）を読み込みました。'; renderTeacher();
+});
+function renderTeacher(){
+  const list = Object.values(tstore.students).sort((a,b) => (a.student.cls - b.student.cls) || (a.student.no - b.student.no));
+  const sums = list.map(x => ({ x, s: summarize(x) }));
+  const used = sums.filter(o => o.s.tries);
+  const allAt = list.flatMap(x => x.attempts);
+  const totalC = allAt.filter(a => a.correct).length;
+  $('t-tiles').innerHTML = list.length ?
+    tile(list.length, '人', '記録を集めた生徒') + tile(used.length, '人', '1回以上学習した生徒') +
+    tile(allAt.length, '問', '解かれた問題（のべ）') + tile(pct(totalC, allAt.length), '%', '全体の正答率') +
+    tile(fmtTime(used.reduce((t,o) => t + o.s.ms, 0) / Math.max(1, used.length)), '', '1人あたりの学習時間')
+    : '<p class="empty">まだ生徒の記録がありません。生徒が書き出したファイルを読み込むか、デモデータで画面を確かめてください。</p>';
+  $('t-students').innerHTML = list.length ? '<tr><th>組</th><th>番</th><th>名前</th><th class="num">回数</th><th class="num">問題数</th><th class="num">正答率</th><th class="num">学習時間</th><th class="num">習得</th><th class="num">苦手</th><th>最終利用</th></tr>' +
+    sums.map(({x,s}) => `<tr><td>${esc(x.student.cls)}</td><td>${esc(x.student.no)}</td><td>${esc(x.student.name)}</td><td class="num">${s.sessions}</td><td class="num">${s.tries}</td><td class="num">${s.rate}%</td><td class="num">${fmtTime(s.ms)}</td><td class="num">${s.mastered}</td><td class="num">${s.weak}</td><td>${s.lastAt ? fmtDate(s.lastAt) : '－'}</td></tr>`).join('') : '';
+  // まちがいの多い問題
+  const by = {};
+  allAt.forEach(a => { const o = by[a.qid] = by[a.qid] || { n:0, ng:0, ans:{} }; o.n++; if (!a.correct){ o.ng++; o.ans[a.answer] = (o.ans[a.answer]||0) + 1; } });
+  const hard = Object.entries(by).filter(([id,o]) => QBY[id] && o.n >= 3).sort((a,b) => b[1].ng/b[1].n - a[1].ng/a[1].n).slice(0, 10);
+  $('t-hard').innerHTML = hard.length ? '<tr><th>問題</th><th class="num">誤答率</th><th>多かった誤答</th></tr>' + hard.map(([id,o]) => {
+    const q = QBY[id], top = Object.entries(o.ans).sort((a,b) => b[1]-a[1])[0];
+    return `<tr><td><span class="mincho">${esc(kanjiOf(q))}</span><br><span class="muted">${esc(RANGE[q.range].name)}</span></td><td class="num">${pct(o.ng,o.n)}%<br><span class="muted">${o.ng}/${o.n}</span></td><td>${top ? esc(top[0]) + '（' + top[1] + '）' : ''}</td></tr>`;
+  }).join('') : '<tr><td class="empty">解答が3回以上ある問題がまだありません。</td></tr>';
+  // 範囲ごとの正答率
+  $('t-ranges').innerHTML = DATA.ranges.map(r => {
+    const at = allAt.filter(a => QBY[a.qid] && QBY[a.qid].range === r.id), c = at.filter(a => a.correct).length, p = pct(c, at.length);
+    return `<div class="bar"><span>${esc(r.name.replace('：',' '))}</span><span class="track"><i class="seg-p" style="width:${p}%"></i></span><span class="muted" style="text-align:right">${at.length ? p+'%' : '－'}</span></div>`;
+  }).join('');
+  // ふりかえり
+  const cm = list.flatMap(x => x.sessions.filter(s => s.comment).map(s => ({ x, s }))).sort((a,b) => b.s.startedAt - a.s.startedAt);
+  $('t-comments').innerHTML = cm.length ? '<tr><th>日時</th><th>生徒</th><th class="num">得点</th><th>ふりかえり・感想</th></tr>' +
+    cm.map(({x,s}) => `<tr><td>${fmtDate(s.startedAt)}</td><td>${esc(x.student.cls)}組${esc(x.student.no)}番 ${esc(x.student.name)}</td><td class="num">${s.score}</td><td>${esc(s.comment)}</td></tr>`).join('')
+    : '<tr><td class="empty">まだふりかえりがありません。</td></tr>';
+  renderNotes();
+}
+function renderNotes(){
+  $('t-notes').innerHTML = tstore.notes.length ? '<tr><th>日時</th><th>気づき</th><th></th></tr>' + tstore.notes.slice().reverse().map(n =>
+    `<tr><td>${fmtDate(n.at)}</td><td>${esc(n.text)}</td><td><button class="btn sub" data-del="${n.at}" style="padding:2px 10px;font-size:12px">削除</button></td></tr>`).join('') : '';
+}
+$('t-note-add').addEventListener('click', () => {
+  const t = $('t-note-text').value.trim(); if (!t) return;
+  tstore.notes.push({ at:Date.now(), text:t }); tpersist(); $('t-note-text').value = ''; renderNotes();
+});
+$('t-notes').addEventListener('click', e => {
+  const b = e.target.closest('[data-del]'); if (!b || !confirm('この気づきを削除しますか？')) return;
+  tstore.notes = tstore.notes.filter(n => String(n.at) !== b.dataset.del); tpersist(); renderNotes();
+});
+$('t-csv').addEventListener('click', () => {
+  const list = Object.values(tstore.students);
+  const rows = [['組','番号','名前','学習回数','取り組んだ問題数','正答率(%)','学習時間(分)','習得した問題数','苦手な問題数','最終利用']];
+  list.forEach(x => { const s = summarize(x); rows.push([x.student.cls, x.student.no, x.student.name, s.sessions, s.tries, s.rate, Math.round(s.ms/60000), s.mastered, s.weak, s.lastAt ? new Date(s.lastAt).toLocaleString('ja-JP') : '']); });
+  rows.push([]); rows.push(['先生の気づき']);
+  tstore.notes.forEach(n => rows.push([new Date(n.at).toLocaleString('ja-JP'), n.text]));
+  const csv = '﻿' + rows.map(r => r.map(v => '"' + String(v).replace(/"/g,'""') + '"').join(',')).join('\r\n');
+  download('漢字ノート_集計.csv', csv, 'text/csv');
+});
+
+// ---------- 起動 ----------
+renderWho();
+if (store.student) openLearn(); else openProfile();
+})();
+</script>
+</body>
+</html>
